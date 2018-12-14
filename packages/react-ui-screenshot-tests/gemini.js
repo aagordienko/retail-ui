@@ -55,7 +55,11 @@ function runStorybook({ env, port }) {
 }
 
 function killChildren() {
-  childPids.forEach(pid => process.kill(-pid));
+  childPids.forEach(pid => {
+    try {
+      process.kill(-pid);
+    } catch (_) {}
+  });
   childPids.length = 0;
 }
 
@@ -71,7 +75,7 @@ Promise.all([
   .then(() => {
     const gemini = exec(`yarn gemini ${process.argv.slice(2).join(" ")}`);
 
-    childPids.push(gemini.pid);
+    // TODO How to kill gemini process on Ctrl+C?
 
     return promisifyProcess(gemini);
   })
