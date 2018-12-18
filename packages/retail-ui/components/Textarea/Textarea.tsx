@@ -200,6 +200,7 @@ class Textarea extends React.Component<TextareaProps, TextareaState> {
 
     const textareaClassNames = classNames({
       [styles.textarea]: true,
+      [styles.size16]: Upgrades.isSizeMedium16pxEnabled(),
       [styles.error]: error,
       [styles.warning]: warning
     });
