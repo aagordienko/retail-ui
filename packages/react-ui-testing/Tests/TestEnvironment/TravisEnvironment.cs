@@ -9,7 +9,7 @@ namespace SKBKontur.SeleniumTesting.Tests.TestEnvironment
             get
             {
                 if(isExecutionViaTravis == null)
-                    isExecutionViaTravis = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("TRAVIS"));
+                    isExecutionViaTravis = !(string.IsNullOrEmpty(Environment.GetEnvironmentVariable("TRAVIS")) && string.IsNullOrEmpty(Environment.GetEnvironmentVariable("TEAMCITY_VERSION")));
                 return isExecutionViaTravis.Value;
             }
         }
