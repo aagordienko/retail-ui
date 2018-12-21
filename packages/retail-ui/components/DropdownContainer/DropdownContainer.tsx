@@ -48,11 +48,20 @@ export default class DropdownContainer extends React.Component<
   private getProps = createPropsGetter(DropdownContainer.defaultProps);
 
   private dom: Nullable<HTMLElement>;
+  private parent: Element | Text | null = null;
   private layoutSub: Nullable<ReturnType<typeof LayoutEvents.addListener>>;
 
   public componentDidMount() {
+    this.updateParent();
     this.position();
     this.layoutSub = LayoutEvents.addListener(this.position);
+  }
+
+  public componentDidUpdate(prevProps: DropdownContainerProps) {
+    const { getParent } = this.props;
+    if (getParent !== prevProps.getParent) {
+      this.updateParent();
+    }
   }
 
   public componentWillMount() {
@@ -108,7 +117,7 @@ export default class DropdownContainer extends React.Component<
   };
 
   private position = () => {
-    const target = this.props.getParent();
+    const target = this.parent;
     const dom = this.dom;
 
     if (this.isElement(target) && dom) {
@@ -183,6 +192,11 @@ export default class DropdownContainer extends React.Component<
     }
   };
 
+  private updateParent = () => {
+    const { getParent } = this.props;
+    this.parent = getParent ? getParent() : null;
+  };
+
   private getHeight = () => {
     if (!this.dom) {
       return 0;
@@ -195,7 +209,7 @@ export default class DropdownContainer extends React.Component<
   };
 
   private getMinWidth = () => {
-    const target = this.props.getParent();
+    const target = this.parent;
     if (!this.isElement(target)) {
       return 0;
     }
@@ -205,7 +219,7 @@ export default class DropdownContainer extends React.Component<
   private convertToRelativePosition = (
     position: DropdownContainerPosition
   ): DropdownContainerPosition => {
-    const target = this.props.getParent();
+    const target = this.parent;
     const { offsetX = 0, offsetY = 0 } = this.props;
     const { top, bottom, left, right } = position;
     if (this.isElement(target)) {
