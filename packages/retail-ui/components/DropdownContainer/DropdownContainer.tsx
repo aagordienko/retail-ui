@@ -8,6 +8,8 @@ import ZIndex from '../ZIndex';
 import { createPropsGetter } from '../internal/createPropsGetter';
 import { Nullable } from '../../typings/utility-types';
 
+type DOMNode = Element | Text | null;
+
 export interface DropdownContainerPosition {
   top: Nullable<number>;
   bottom: Nullable<number>;
@@ -17,7 +19,7 @@ export interface DropdownContainerPosition {
 
 export interface DropdownContainerProps {
   align?: 'left' | 'right';
-  getParent: () => null | Element | Text;
+  getParent: () => DOMNode;
   children?: React.ReactNode;
   disablePortal?: boolean;
   offsetY?: number;
@@ -47,8 +49,8 @@ export default class DropdownContainer extends React.Component<
 
   private getProps = createPropsGetter(DropdownContainer.defaultProps);
 
-  private dom: Nullable<HTMLElement>;
-  private parent: Element | Text | null = null;
+  private dom: DOMNode = null;
+  private parent: DOMNode = null;
   private layoutSub: Nullable<ReturnType<typeof LayoutEvents.addListener>>;
 
   public componentDidMount() {
@@ -109,10 +111,10 @@ export default class DropdownContainer extends React.Component<
   }
 
   private ref = (e: ZIndex | null) => {
-    this.dom = e && (findDOMNode(e) as HTMLElement);
+    this.dom = e && findDOMNode(e);
   };
 
-  private isElement = (node: Element | Text | null): node is Element => {
+  private isElement = (node: DOMNode): node is Element => {
     return node instanceof Element;
   };
 
@@ -198,7 +200,7 @@ export default class DropdownContainer extends React.Component<
   };
 
   private getHeight = () => {
-    if (!this.dom) {
+    if (!this.isElement(this.dom)) {
       return 0;
     }
     const child = this.dom.children.item(0);
